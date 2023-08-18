@@ -38,7 +38,7 @@ public class SecretProperties {
     private String privateKey;
 
     /**
-     * 是否显示 logger
+     * 是否显示 logger , 开发和测试时可以开启，生产建议关闭
      */
-    private Boolean isShowLog;
+    private Boolean isShowLog = false;
 }
