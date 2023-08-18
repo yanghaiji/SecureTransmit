@@ -88,21 +88,4 @@ public class RSAEncrypt {
         return keyFactory.generatePrivate(keySpec);
     }
 
-    public static void main(String[] args) {
-        Map<String, Object> keyMap;
-        try {
-            keyMap = initKey();
-            String publicKey = getPublicKey(keyMap);
-            System.out.println(publicKey);
-            String privateKey = getPrivateKey(keyMap);
-            System.out.println(privateKey);
-            String encryptString = RsaTools.encrypt("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBCFeo7Disk9/espJDwvvGk9BpUMC07/j6BMM1NHZnXsZ2ezVVEfGHj+h1KQG+NLulmHTDEJQHny/itvtMCjIPUemJHccO5qwe5CiRbbQlUtNjDEM0kMrE6eswhyRR4QklTPEBfTLvwswugNvsxBMqAmcCoSNo3Rkg4sXXvQgo7QIDAQAB", "12test34");
-            System.out.println(encryptString);
-            String decryptString = RsaTools.decrypt("MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIEIV6jsOKyT396ykkPC+8aT0GlQwLTv+PoEwzU0dmdexnZ7NVUR8YeP6HUpAb40u6WYdMMQlAefL+K2+0wKMg9R6Ykdxw7mrB7kKJFttCVS02MMQzSQysTp6zCHJFHhCSVM8QF9Mu/CzC6A2+zEEyoCZwKhI2jdGSDixde9CCjtAgMBAAECgYA/D3Gv98p25Uoqz0DWZwufcAwR/EpB42nd3sf8T6hyOoppyys0aTGOXBFyeNkGOUVf19NwpcCCvRStC1pjPjRaQJ2dJwwkgpAjZF4dZgCh1bF7vTC3H8HQV09xfeGYOArAuOClD5dKxKPGyDjDtsNWstSkIvsneGNX8Xh0DhiNbQJBALxixDFoXnawZRci3Z0TkSuKEg3aO17jrwwfstqyrBLf50JXadmE5kDslX3C4F/BNoVPF2TQ9COXGYf23hta+B8CQQCvWBfoJbhqo5LzuBpD4e/R3YGyPlJRgawrT3PxntylgppuwRfRPFhleIcZsGI+8AUq0j8M+oo+qzJfi4ctyu1zAkEAsoGUDo0rFaRH5ghvniuwX2VRfjbQEzYD5KUUwQ6U5r2rUL2r2yWHWPXVIXnLSnC2zNMJA8rLy/2df6x5AcrNWQJAUjZzvx0wgo9/b1Z6uilNUJETJoeiASVTnFr8eeWKfu/liNhwWmJ479q7PYg+CFRxl8pMVcGC4C9UxwecshPbkQJAUwiOTwdNgvf67B1tw3rlJ5B270mpyc5ANINMXlGA0fjaP3rdKDTEPUTq4/Zwy0uq/T9zJDjSorbKenkc/Pxzdw==", "YkvR4+2Ft85pgX+FTUqVna/Kqad7u4F9KF7jy11fhbycuq/AfSIGFEl3LTFkhs+HzAHX7AwB0v2HDabtDAqAHcI0f0XQG2oDpNUdnVsMdmyJj9cE+/NL9A1lHz1lCsGuzM/ETZ5FiLZG4iQJvQodWoIfmuOBeDJphwDMKpozfio=");
-            System.out.println(decryptString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
