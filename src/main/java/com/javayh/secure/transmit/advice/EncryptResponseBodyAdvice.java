@@ -55,7 +55,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             try {
                 String content = JSON.toJSONString(body);
                 if (!StringUtils.hasText(publicKey)) {
-                    throw new NullPointerException("Please configure secure.transmit.encrypt.privatekey parameter!");
+                    throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
                 String result = RsaTools.encrypt(publicKey, content);
                 if (secretProperties.getIsShowLog()) {

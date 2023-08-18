@@ -6,14 +6,12 @@ import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
-import java.security.*;
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPublicKeySpec;
+import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * <p>
- * 来自 zhao-baolin
  * https://github.com/yanghaiji/javayh-platform/blob/master/javayh-dependencies/javayh-common-starter/src/main/java/com/javayh/common/encrypt/rsa/
  * </p>
  *
@@ -33,102 +31,6 @@ public class RsaTools {
      * RSA最大解密密文大小
      */
     private static final int MAX_DECRYPT_BLOCK = 128;
-
-    /**
-     * 公钥模量
-     */
-    public static String publicModulus = null;
-
-    /**
-     * 公钥指数
-     */
-    public static String publicExponent = null;
-
-    /**
-     * 私钥模量
-     */
-    public static String privateModulus = null;
-
-    /**
-     * 私钥指数
-     */
-    public static String privateExponent = null;
-
-    private static KeyFactory keyFactory = null;
-
-
-    static {
-        try {
-            keyFactory = KeyFactory.getInstance(EncryptConstantUtils.KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    public RsaTools() {
-        try {
-            /*
-             * 指定key的大小(64的整数倍,最小512位)
-             */
-            int keySize = 1024;
-            generateKeyPairString(keySize);
-        } catch (Exception e) {
-            log.error("generateKeyPairString {}", e.getMessage());
-        }
-    }
-
-    public RsaTools(int keySize) {
-        try {
-            generateKeyPairString(keySize);
-        } catch (Exception e) {
-            log.error("generateKeyPairString {}", e.getMessage());
-        }
-    }
-
-    /**
-     * <p>
-     * 生成密钥对字符串
-     * </p>
-     *
-     * @param keySize
-     * @return void
-     * @version 1.0.0
-     * @author Dylan-haiji
-     * @since 2020/3/5
-     */
-    private void generateKeyPairString(int keySize) throws Exception {
-        /* RSA算法要求有一个可信任的随机数源 */
-        SecureRandom sr = new SecureRandom();
-        /* 为RSA算法创建一个KeyPairGenerator对象 */
-        KeyPairGenerator kpg = KeyPairGenerator
-                .getInstance(EncryptConstantUtils.KEY_ALGORITHM);
-        /* 利用上面的随机数据源初始化这个KeyPairGenerator对象 */
-        kpg.initialize(keySize, sr);
-        /* 生成密匙对 */
-        KeyPair kp = kpg.generateKeyPair();
-        /* 得到公钥 */
-        Key publicKey = kp.getPublic();
-        /* 得到私钥 */
-        Key privateKey = kp.getPrivate();
-        /* 用字符串将生成的密钥写入文件 获取算法 */
-        String algorithm = publicKey.getAlgorithm();
-        KeyFactory keyFact = KeyFactory.getInstance(algorithm);
-        BigInteger prime = null;
-        BigInteger exponent = null;
-        RSAPublicKeySpec keySpec = keyFact.getKeySpec(publicKey, RSAPublicKeySpec.class);
-        prime = keySpec.getModulus();
-        exponent = keySpec.getPublicExponent();
-        RsaTools.publicModulus = HexUtil.bytes2Hex(prime.toByteArray());
-        RsaTools.publicExponent = HexUtil.bytes2Hex(exponent.toByteArray());
-
-        RSAPrivateCrtKeySpec privateKeySpec = keyFact.getKeySpec(privateKey,
-                RSAPrivateCrtKeySpec.class);
-        BigInteger privateModulus = privateKeySpec.getModulus();
-        BigInteger privateExponent = privateKeySpec.getPrivateExponent();
-        RsaTools.privateModulus = HexUtil.bytes2Hex(privateModulus.toByteArray());
-        RsaTools.privateExponent = HexUtil.bytes2Hex(privateExponent.toByteArray());
-    }
-
 
     /**
      * 使用给定的公钥加密给定的字符串。
@@ -163,25 +65,7 @@ public class RsaTools {
     private static byte[] encrypt(Key key, byte[] data) throws Exception {
         Cipher ci = Cipher.getInstance(EncryptConstantUtils.ALGORITHM);
         ci.init(Cipher.ENCRYPT_MODE, key);
-        int inputLen = data.length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offSet = 0;
-        byte[] cache;
-        int i = 0;
-        // 对数据分段加密
-        while (inputLen - offSet > 0) {
-            if (inputLen - offSet > MAX_ENCRYPT_BLOCK) {
-                cache = ci.doFinal(data, offSet, MAX_ENCRYPT_BLOCK);
-            } else {
-                cache = ci.doFinal(data, offSet, inputLen - offSet);
-            }
-            out.write(cache, 0, cache.length);
-            i++;
-            offSet = i * MAX_ENCRYPT_BLOCK;
-        }
-        byte[] encryptedData = out.toByteArray();
-        out.close();
-        return encryptedData;
+        return getEnDeData(data, ci, MAX_ENCRYPT_BLOCK);
     }
 
     /**
@@ -215,25 +99,33 @@ public class RsaTools {
     private static byte[] decrypt(Key key, byte[] data) throws Exception {
         Cipher ci = Cipher.getInstance(EncryptConstantUtils.ALGORITHM);
         ci.init(Cipher.DECRYPT_MODE, key);
+        return getEnDeData(data, ci, MAX_DECRYPT_BLOCK);
+    }
+
+    /**
+     * 数据加解密
+     */
+    private static byte[] getEnDeData(byte[] data, Cipher ci, int maxBlock) throws Exception {
         int inputLen = data.length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offSet = 0;
-        byte[] cache;
-        int i = 0;
-        // 对数据分段解密
-        while (inputLen - offSet > 0) {
-            if (inputLen - offSet > MAX_DECRYPT_BLOCK) {
-                cache = ci.doFinal(data, offSet, MAX_DECRYPT_BLOCK);
-            } else {
-                cache = ci.doFinal(data, offSet, inputLen - offSet);
+        byte[] edData;
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            int offSet = 0;
+            byte[] cache;
+            int i = 0;
+            // 对数据分段解密
+            while (inputLen - offSet > 0) {
+                if (inputLen - offSet > maxBlock) {
+                    cache = ci.doFinal(data, offSet, maxBlock);
+                } else {
+                    cache = ci.doFinal(data, offSet, inputLen - offSet);
+                }
+                out.write(cache, 0, cache.length);
+                i++;
+                offSet = i * maxBlock;
             }
-            out.write(cache, 0, cache.length);
-            i++;
-            offSet = i * MAX_DECRYPT_BLOCK;
+            edData = out.toByteArray();
         }
-        byte[] decryptedData = out.toByteArray();
-        out.close();
-        return decryptedData;
+        return edData;
     }
 
     /**
