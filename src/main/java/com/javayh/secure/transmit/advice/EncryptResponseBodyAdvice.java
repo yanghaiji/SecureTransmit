@@ -2,10 +2,8 @@ package com.javayh.secure.transmit.advice;
 
 import com.alibaba.fastjson.JSON;
 import com.javayh.secure.transmit.annotation.Encrypt;
-import com.javayh.secure.transmit.bean.SecretType;
-import com.javayh.secure.transmit.config.SecretProperties;
-import com.javayh.secure.transmit.encrypt.base.Base64Util;
-import com.javayh.secure.transmit.encrypt.rsa.RsaTools;
+import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.encrypt.MessageDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -50,14 +48,14 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             encryptLocal.remove();
             return body;
         }
-        if (encrypt && secretProperties.getType().equals(SecretType.RSA)) {
-            String publicKey = secretProperties.getPublicKey();
+        if (encrypt) {
+            String publicKey = Objects.isNull(secretProperties.getAes().getKey()) ? secretProperties.getRsa().getPublicKey() : secretProperties.getAes().getKey();
             try {
                 String content = JSON.toJSONString(body);
                 if (!StringUtils.hasText(publicKey)) {
                     throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
-                String result = RsaTools.encrypt(publicKey, content);
+                String result = MessageDigest.getInstance(secretProperties).encrypt(publicKey, content);
                 if (secretProperties.getIsShowLog()) {
                     log.info("Pre-encrypted data：{}，After encryption：{}", content, result);
                 }

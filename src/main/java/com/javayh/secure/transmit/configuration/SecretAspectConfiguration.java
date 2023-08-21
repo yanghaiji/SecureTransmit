@@ -1,6 +1,6 @@
-package com.javayh.secure.transmit.processor;
+package com.javayh.secure.transmit.configuration;
 
-import com.javayh.secure.transmit.config.SecretProperties;
+import com.javayh.secure.transmit.processor.EncryptDecryptProcessor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,23 +11,23 @@ import org.aspectj.lang.annotation.Pointcut;
  * @author haiji
  */
 @Aspect
-public class EncryptDecryptAspect {
+public class SecretAspectConfiguration {
 
     private final EncryptDecryptProcessor encryptionProcessor;
 
-    public EncryptDecryptAspect(SecretProperties secretProperties) {
+    public SecretAspectConfiguration(SecretProperties secretProperties) {
         this.encryptionProcessor = new EncryptDecryptProcessor(secretProperties);
     }
 
-    @Pointcut("@annotation(com.javayh.secure.transmit.annotation.EncryptDecrypt)")
-    public void encryptDecryptMethods() {
+    @Pointcut("@annotation(com.javayh.secure.transmit.annotation.SecureCrypto)")
+    public void secretMethods() {
     }
 
 
     /**
      * 前置解密处理
      */
-    @Before("encryptDecryptMethods()")
+    @Before("secretMethods()")
     public void decryptReturnValues(JoinPoint joinPoint) throws Exception {
         Object[] args = joinPoint.getArgs();
         for (Object arg : args) {
@@ -39,8 +39,8 @@ public class EncryptDecryptAspect {
     /**
      * 后置最终的加密处理
      */
-    @AfterReturning(pointcut = "encryptDecryptMethods()", returning = "returnValue")
-    public Object encryptReturnValues(JoinPoint joinPoint, Object returnValue) throws Exception {
+    @AfterReturning(pointcut = "secretMethods()", returning = "returnValue")
+    public Object encryptReturnValues(Object returnValue) throws Exception {
         return encryptionProcessor.encryptFields(returnValue);
     }
 

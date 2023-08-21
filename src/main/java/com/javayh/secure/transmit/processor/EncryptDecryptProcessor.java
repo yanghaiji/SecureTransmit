@@ -2,9 +2,10 @@ package com.javayh.secure.transmit.processor;
 
 import com.javayh.secure.transmit.annotation.DecryptField;
 import com.javayh.secure.transmit.annotation.EncryptField;
-import com.javayh.secure.transmit.bean.SecretType;
-import com.javayh.secure.transmit.config.SecretProperties;
-import com.javayh.secure.transmit.encrypt.rsa.RsaTools;
+import com.javayh.secure.transmit.configuration.AesProperties;
+import com.javayh.secure.transmit.configuration.RsaProperties;
+import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.encrypt.MessageDigest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -23,16 +24,25 @@ public class EncryptDecryptProcessor {
     /**
      * 密钥和机密算法的配置
      */
-    private final String publicKey;
-    private final String privateKey;
-    private final SecretType secretType;
+    private String publicKey;
+    private String privateKey;
     private final Boolean isShowLog;
+    private final SecretProperties secretProperties;
 
     public EncryptDecryptProcessor(SecretProperties secretProperties) {
-        this.publicKey = secretProperties.getPublicKey();
-        this.privateKey = secretProperties.getPrivateKey();
-        this.secretType = secretProperties.getType();
+        RsaProperties rsa = secretProperties.getRsa();
+        AesProperties aes = secretProperties.getAes();
+        if (Objects.nonNull(rsa)) {
+            this.publicKey = rsa.getPublicKey();
+            this.privateKey = rsa.getPrivateKey();
+        }
+        if (Objects.nonNull(aes)) {
+            String key = aes.getKey();
+            this.publicKey = key;
+            this.privateKey = key;
+        }
         this.isShowLog = secretProperties.getIsShowLog();
+        this.secretProperties = secretProperties;
     }
 
     /**
@@ -47,8 +57,8 @@ public class EncryptDecryptProcessor {
             if (field.isAnnotationPresent(EncryptField.class)) {
                 field.setAccessible(true);
                 Object fieldValue = field.get(object);
-                if (Objects.nonNull(fieldValue) && secretType.equals(SecretType.RSA)) {
-                    field.set(object, RsaTools.encrypt(publicKey, fieldValue.toString()));
+                if (Objects.nonNull(fieldValue)) {
+                    field.set(object, MessageDigest.getInstance(secretProperties).encrypt(publicKey, fieldValue.toString()));
                 }
                 if (isShowLog) {
                     log.info("encrypt before fieldName = {},fieldValue = {} ; after fieldValue = {}", field, fieldValue, field.get(object));
@@ -69,8 +79,8 @@ public class EncryptDecryptProcessor {
             if (field.isAnnotationPresent(DecryptField.class)) {
                 field.setAccessible(true);
                 Object fieldValue = field.get(object);
-                if (Objects.nonNull(fieldValue) && secretType.equals(SecretType.RSA)) {
-                    field.set(object, RsaTools.decrypt(privateKey, fieldValue.toString()));
+                if (Objects.nonNull(fieldValue)) {
+                    field.set(object, MessageDigest.getInstance(secretProperties).decrypt(privateKey, fieldValue.toString()));
                 }
                 if (isShowLog) {
                     log.info("decrypt before fieldName = {},fieldValue = {} ; after fieldValue = {}", field, fieldValue, field.get(object));
