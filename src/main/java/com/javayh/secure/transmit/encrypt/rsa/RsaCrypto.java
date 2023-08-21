@@ -1,6 +1,8 @@
 package com.javayh.secure.transmit.encrypt.rsa;
 
-import com.javayh.secure.transmit.constant.EncryptConstantUtils;
+import com.javayh.secure.transmit.constant.EncryptConstant;
+import com.javayh.secure.transmit.encrypt.DataKeyGenerator;
+import com.javayh.secure.transmit.encrypt.EnDeTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
@@ -20,7 +22,7 @@ import java.security.PublicKey;
  * @since 2020/3/5
  */
 @Slf4j
-public class RsaTools {
+public class RsaCrypto implements EnDeTemplate {
 
     /**
      * RSA最大加密明文大小
@@ -39,13 +41,14 @@ public class RsaTools {
      * @param plaintext 字符串。
      * @return 给定字符串的密文。
      */
-    public static String encrypt(String key, String plaintext) {
+    @Override
+    public String encrypt(String key, String plaintext) {
         if (key == null || plaintext == null) {
             return null;
         }
         byte[] data = plaintext.getBytes();
         try {
-            PublicKey publicKey = RSAEncrypt.getPublicKey(key);
+            PublicKey publicKey = DataKeyGenerator.RSA.getPublicKey(key);
             byte[] enData = encrypt(publicKey, data);
             return Base64.encodeBase64String(enData);
         } catch (Exception ex) {
@@ -62,8 +65,8 @@ public class RsaTools {
      * @return 加密后的数据。
      */
 
-    private static byte[] encrypt(Key key, byte[] data) throws Exception {
-        Cipher ci = Cipher.getInstance(EncryptConstantUtils.ALGORITHM);
+    private byte[] encrypt(Key key, byte[] data) throws Exception {
+        Cipher ci = Cipher.getInstance(EncryptConstant.ALGORITHM);
         ci.init(Cipher.ENCRYPT_MODE, key);
         return getEnDeData(data, ci, MAX_ENCRYPT_BLOCK);
     }
@@ -75,12 +78,13 @@ public class RsaTools {
      * @param data 密文
      * @return 原文字符串。
      */
-    public static String decrypt(String key, String data) {
+    @Override
+    public String decrypt(String key, String data) {
         if (key == null || isBlank(data)) {
             return null;
         }
         try {
-            PrivateKey privateKey = RSAEncrypt.getPrivateKey(key);
+            PrivateKey privateKey = DataKeyGenerator.RSA.getPrivateKey(key);
             byte[] enData = Base64.decodeBase64(data);
             return new String(decrypt(privateKey, enData));
         } catch (Exception ex) {
@@ -97,7 +101,7 @@ public class RsaTools {
      * @return 原数据
      */
     private static byte[] decrypt(Key key, byte[] data) throws Exception {
-        Cipher ci = Cipher.getInstance(EncryptConstantUtils.ALGORITHM);
+        Cipher ci = Cipher.getInstance(EncryptConstant.ALGORITHM);
         ci.init(Cipher.DECRYPT_MODE, key);
         return getEnDeData(data, ci, MAX_DECRYPT_BLOCK);
     }

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.javayh.secure.transmit.config.EnableSecurityConfiguration
+  com.javayh.secure.transmit.configuration.EnableSecurityConfiguration

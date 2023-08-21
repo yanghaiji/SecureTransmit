@@ -1,4 +1,4 @@
-package com.javayh.secure.transmit.config;
+package com.javayh.secure.transmit.configuration;
 
 import com.javayh.secure.transmit.bean.SecretType;
 import lombok.Data;
@@ -28,17 +28,17 @@ public class SecretProperties {
     private Boolean enable = true;
 
     /**
-     * 公钥
-     */
-    private String publicKey;
-
-    /**
-     * 私钥
-     */
-    private String privateKey;
-
-    /**
      * 是否显示 logger , 开发和测试时可以开启，生产建议关闭
      */
     private Boolean isShowLog = false;
+
+    /**
+     * aes 配置
+     */
+    private AesProperties aes;
+
+    /**
+     * rsa 配置
+     */
+    private RsaProperties rsa;
 }

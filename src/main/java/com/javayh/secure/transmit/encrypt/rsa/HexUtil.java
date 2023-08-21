@@ -2,12 +2,11 @@ package com.javayh.secure.transmit.encrypt.rsa;
 
 
 import com.javayh.secure.transmit.constant.ConstantUtils;
-import com.javayh.secure.transmit.constant.EncryptConstantUtils;
+import com.javayh.secure.transmit.constant.EncryptConstant;
 
 /**
  * <p>
  * https://github.com/yanghaiji/javayh-platform/blob/master/javayh-dependencies/javayh-common-starter/src/main/java/com/javayh/common/encrypt/rsa/
- * 数据加密工具，来自 bolin
  * </p>
  *
  * @author Dylan-haiji
@@ -58,8 +57,8 @@ public class HexUtil {
      * @return 转化结果
      */
     public static String bytes2Hex(final byte[] data, final boolean toLowerCase) {
-        return bytes2Hex(data, toLowerCase ? EncryptConstantUtils.DIGITS_LOWER
-                : EncryptConstantUtils.DIGITS_UPPER);
+        return bytes2Hex(data, toLowerCase ? EncryptConstant.DIGITS_LOWER
+                : EncryptConstant.DIGITS_UPPER);
     }
 
     /**

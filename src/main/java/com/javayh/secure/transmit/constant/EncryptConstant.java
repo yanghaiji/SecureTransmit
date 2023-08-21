@@ -10,12 +10,11 @@ package com.javayh.secure.transmit.constant;
  * @version 1.0.0
  * @since 2020-03-25 17:34
  */
-public interface EncryptConstantUtils {
+public interface EncryptConstant {
 
 	String ALGORITHM_AES = "AES";
 
 	String INSTANCE = "AES/ECB/PKCS5Padding";
-
 
 	char[] HEXADECIMAL = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
 			'c', 'd', 'e', 'f' };

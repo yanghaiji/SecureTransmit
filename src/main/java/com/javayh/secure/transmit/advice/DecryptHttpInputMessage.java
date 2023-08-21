@@ -1,7 +1,8 @@
 package com.javayh.secure.transmit.advice;
 
 
-import com.javayh.secure.transmit.encrypt.rsa.RsaTools;
+import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.encrypt.MessageDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,7 @@ public class DecryptHttpInputMessage implements HttpInputMessage {
     private final InputStream body;
 
 
-    public DecryptHttpInputMessage(HttpInputMessage inputMessage, String privateKey, String charset, boolean showLog) throws Exception {
+    public DecryptHttpInputMessage(HttpInputMessage inputMessage, String privateKey, SecretProperties secretProperties, boolean showLog) throws Exception {
 
         if (StringUtils.isEmpty(privateKey)) {
             throw new IllegalArgumentException("privateKey is null");
@@ -43,7 +44,7 @@ public class DecryptHttpInputMessage implements HttpInputMessage {
             if (!StringUtils.isEmpty(content)) {
                 String[] contents = content.split("\\|");
                 for (String value : contents) {
-                    json.append(RsaTools.decrypt(privateKey, value));
+                    json.append(MessageDigest.getInstance(secretProperties).decrypt(privateKey, value));
                 }
             }
             decryptBody = json.toString();

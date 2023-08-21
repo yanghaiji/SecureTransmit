@@ -1,7 +1,7 @@
 package com.javayh.secure.transmit.advice;
 
 import com.javayh.secure.transmit.annotation.Decrypt;
-import com.javayh.secure.transmit.config.SecretProperties;
+import com.javayh.secure.transmit.configuration.SecretProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -24,11 +24,11 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
     private boolean encrypt;
 
     @Autowired
-    private SecretProperties secretKeyConfig;
+    private SecretProperties secretProperties;
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        if (Objects.requireNonNull(methodParameter.getMethod()).isAnnotationPresent(Decrypt.class) && secretKeyConfig.getEnable()) {
+        if (Objects.requireNonNull(methodParameter.getMethod()).isAnnotationPresent(Decrypt.class) && secretProperties.getEnable()) {
             encrypt = true;
         }
         return encrypt;
@@ -44,7 +44,8 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                                            Class<? extends HttpMessageConverter<?>> converterType) {
         if (encrypt) {
             try {
-                return new DecryptHttpInputMessage(inputMessage, secretKeyConfig.getPrivateKey(), "utf-8",secretKeyConfig.getIsShowLog());
+                String privateKey = Objects.isNull(secretProperties.getAes().getKey()) ? secretProperties.getRsa().getPrivateKey() : secretProperties.getAes().getKey();
+                return new DecryptHttpInputMessage(inputMessage, privateKey, secretProperties, secretProperties.getIsShowLog());
             } catch (Exception e) {
                 log.error("Decryption failed", e);
             }
