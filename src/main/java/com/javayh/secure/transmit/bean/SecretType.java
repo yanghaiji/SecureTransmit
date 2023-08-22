@@ -14,7 +14,18 @@ public enum SecretType {
 
     RSA,
 
-    BASE64,
+    ECC,
+
+    DES,
+
+    DES3,
+
+    TF,
+
+    BF,
+
+    DH,
+
     ;
 
 }
