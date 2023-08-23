@@ -1,6 +1,6 @@
 
 <h1 align="center">
-  <a href="https://github.com/yanghaiji/SecureTransmit"><img src="https://github.com/yanghaiji/SecureTransmit/blob/ecc_feature/doc/logo.png" alt="Standard - SecureTransmit" width="500"></a>
+  <a href="https://github.com/yanghaiji/SecureTransmit"><img src="https://github.com/yanghaiji/SecureTransmit/blob/main/doc/logo.png" alt="Standard - SecureTransmit" width="500"></a>
   <br>
   SecureTransmit
   <br>
