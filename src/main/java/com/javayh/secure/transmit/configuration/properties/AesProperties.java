@@ -1,4 +1,4 @@
-package com.javayh.secure.transmit.configuration;
+package com.javayh.secure.transmit.configuration.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

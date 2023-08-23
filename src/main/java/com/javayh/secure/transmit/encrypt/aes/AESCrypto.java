@@ -1,6 +1,6 @@
 package com.javayh.secure.transmit.encrypt.aes;
 
-import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.constant.EncryptConstant;
 import com.javayh.secure.transmit.encrypt.EnDeTemplate;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;

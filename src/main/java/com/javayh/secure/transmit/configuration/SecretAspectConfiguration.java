@@ -1,5 +1,6 @@
 package com.javayh.secure.transmit.configuration;
 
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.processor.EncryptDecryptProcessor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

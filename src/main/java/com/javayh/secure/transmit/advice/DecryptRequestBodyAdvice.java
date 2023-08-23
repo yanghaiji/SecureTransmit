@@ -1,7 +1,7 @@
 package com.javayh.secure.transmit.advice;
 
 import com.javayh.secure.transmit.annotation.Decrypt;
-import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;

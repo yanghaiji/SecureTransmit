@@ -3,6 +3,7 @@ package com.javayh.secure.transmit.configuration;
 
 import com.javayh.secure.transmit.advice.DecryptRequestBodyAdvice;
 import com.javayh.secure.transmit.advice.EncryptResponseBodyAdvice;
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -20,6 +21,6 @@ import java.lang.annotation.*;
         EncryptResponseBodyAdvice.class,
         DecryptRequestBodyAdvice.class,
         SecretAspectConfiguration.class})
-public @interface EnableSecurityConfiguration {
+public @interface SecureTransmitAutoConfiguration {
 
 }
