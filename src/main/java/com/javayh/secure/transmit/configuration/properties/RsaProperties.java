@@ -1,6 +1,8 @@
-package com.javayh.secure.transmit.configuration;
+package com.javayh.secure.transmit.configuration.properties;
 
+import com.javayh.secure.transmit.configuration.properties.BaseProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -13,18 +15,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 2023-08-17
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @ConfigurationProperties(value = "secure.transmit.rsa")
-public class RsaProperties {
+public class RsaProperties extends BaseProperties {
 
-
-    /**
-     * 公钥
-     */
-    private String publicKey;
-
-    /**
-     * 私钥
-     */
-    private String privateKey;
 
 }

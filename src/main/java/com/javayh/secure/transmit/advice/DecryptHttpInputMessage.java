@@ -1,7 +1,7 @@
 package com.javayh.secure.transmit.advice;
 
 
-import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.MessageDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

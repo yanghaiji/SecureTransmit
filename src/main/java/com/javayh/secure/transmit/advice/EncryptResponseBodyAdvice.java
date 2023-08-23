@@ -2,7 +2,7 @@ package com.javayh.secure.transmit.advice;
 
 import com.alibaba.fastjson.JSON;
 import com.javayh.secure.transmit.annotation.Encrypt;
-import com.javayh.secure.transmit.configuration.SecretProperties;
+import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.MessageDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;

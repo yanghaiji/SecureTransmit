@@ -3,6 +3,7 @@ package com.javayh.secure.transmit.encrypt;
 import com.javayh.secure.transmit.constant.EncryptConstant;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;
 import com.javayh.secure.transmit.encrypt.md5.MD5Crypto;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
@@ -65,7 +66,7 @@ public class DataKeyGenerator {
         /**
          * 获得公钥
          */
-        private static String getPublicKey(Map<String, Object> keyMap) throws Exception {
+        public static String getPublicKey(Map<String, Object> keyMap) throws Exception {
             // 获得map中的公钥对象 转为key对象
             Key key = (Key) keyMap.get(EncryptConstant.PUBLIC_KEY);
             // 编码返回字符串
@@ -75,7 +76,7 @@ public class DataKeyGenerator {
         /**
          * 获得私钥
          */
-        private static String getPrivateKey(Map<String, Object> keyMap) throws Exception {
+        public static String getPrivateKey(Map<String, Object> keyMap) throws Exception {
             // 获得map中的私钥对象 转为key对象
             Key key = (Key) keyMap.get(EncryptConstant.PRIVATE_KEY);
             // 编码返回字符串
@@ -110,20 +111,48 @@ public class DataKeyGenerator {
 
 
         public static PublicKey getPublicKey(String key) throws Exception {
-            byte[] keyBytes;
-            keyBytes = Base64.decodeBase64(key);
+            byte[] keyBytes = Base64.decodeBase64(key);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(keySpec);
         }
 
         public static PrivateKey getPrivateKey(String key) throws Exception {
-            byte[] keyBytes;
-            keyBytes = Base64.decodeBase64(key);
+            byte[] keyBytes = Base64.decodeBase64(key);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);
         }
     }
+
+
+    public static class ECC {
+
+        static {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        }
+
+        /**
+         * 生成秘钥对
+         * <p>
+         * {@link org.bouncycastle.jcajce.provider.asymmetric.ec.KeyPairGeneratorSpi.ecParameters (line #173)}
+         * 192, 224, 239, 256, 384, 521
+         */
+        public static KeyPair generateKeyPair() throws Exception {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(EncryptConstant.EC, EncryptConstant.BC);
+            keyPairGenerator.initialize(521);
+            return keyPairGenerator.generateKeyPair();
+        }
+
+        /**
+         * 获取公钥/私钥(Base64编码)
+         */
+        @SneakyThrows
+        public static String keyToString(Key key) {
+            byte[] keyBytes = key.getEncoded();
+            return java.util.Base64.getEncoder().encodeToString(keyBytes);
+        }
+    }
+
 
 }
