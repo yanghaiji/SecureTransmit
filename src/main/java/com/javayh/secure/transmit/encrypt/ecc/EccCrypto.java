@@ -2,7 +2,7 @@ package com.javayh.secure.transmit.encrypt.ecc;
 
 import com.javayh.secure.transmit.configuration.properties.EccProperties;
 import com.javayh.secure.transmit.constant.EncryptConstant;
-import com.javayh.secure.transmit.encrypt.EnDeTemplate;
+import com.javayh.secure.transmit.encrypt.SecureTransmitTemplate;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.Base64;
  * @since 2023-08-22
  */
 @Slf4j
-public class EccCrypto implements EnDeTemplate {
+public class EccCrypto implements SecureTransmitTemplate {
 
     static {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -80,5 +80,14 @@ public class EccCrypto implements EnDeTemplate {
         byte[] keyBytes = Base64Util.decode(keyString);
         KeyFactory keyFactory = KeyFactory.getInstance(EncryptConstant.EC, EncryptConstant.BC);
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
+    }
+
+    public static void main(String[] args) throws Exception {
+        EccCrypto eccCrypto = new EccCrypto();
+        String encrypt = eccCrypto.encrypt("MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBUx2lpwkU4Tsp7Ew3taAodarrru30NBysXqJJcO+58HwleWTfvQN+zMkGoPAY56+nNCD4qJlPt9B4MGEMHZsg2iEAk5tUd6TSe4QuHTs8jeKiPQhJd5/jqpBAH9fVYCwFjvlqF282rL7LKoHqyBhuGQsd4nOguZB0rymQ3gRW7J9ReZA=","test");
+        String decrypt = eccCrypto.decrypt("MIH3AgEAMBAGByqGSM49AgEGBSuBBAAjBIHfMIHcAgEBBEIBaBKm6dbDCpu0+dfzuAZQWReoE3Se2Z/Ehtj2vvwnl98K/qEEKcbeTUSZECvmAPHhkVbjiTqO2ZH3wya9OxgvYtagBwYFK4EEACOhgYkDgYYABAFTHaWnCRThOynsTDe1oCh1quuu7fQ0HKxeoklw77nwfCV5ZN+9A37MyQag8Bjnr6c0IPiomU+30HgwYQwdmyDaIQCTm1R3pNJ7hC4dOzyN4qI9CEl3n+OqkEAf19VgLAWO+WoXbzasvssqgerIGG4ZCx3ic6C5kHSvKZDeBFbsn1F5kA== ", encrypt);
+
+        System.out.println(encrypt);
+        System.out.println(decrypt);
     }
 }

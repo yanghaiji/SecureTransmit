@@ -3,7 +3,7 @@ package com.javayh.secure.transmit.advice;
 import com.alibaba.fastjson.JSON;
 import com.javayh.secure.transmit.annotation.Encrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
-import com.javayh.secure.transmit.encrypt.MessageDigest;
+import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -55,7 +55,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
                 if (!StringUtils.hasText(publicKey)) {
                     throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
-                String result = MessageDigest.getInstance(secretProperties).encrypt(publicKey, content);
+                String result = SecureTransmitDigest.getInstance(secretProperties).encrypt(publicKey, content);
                 if (secretProperties.getIsShowLog()) {
                     log.info("Pre-encrypted data：{}，After encryption：{}", content, result);
                 }

@@ -2,7 +2,7 @@ package com.javayh.secure.transmit.encrypt.rsa;
 
 import com.javayh.secure.transmit.constant.EncryptConstant;
 import com.javayh.secure.transmit.encrypt.DataKeyGenerator;
-import com.javayh.secure.transmit.encrypt.EnDeTemplate;
+import com.javayh.secure.transmit.encrypt.SecureTransmitTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
@@ -22,7 +22,7 @@ import java.security.PublicKey;
  * @since 2020/3/5
  */
 @Slf4j
-public class RsaCrypto implements EnDeTemplate {
+public class RsaCrypto implements SecureTransmitTemplate {
 
     /**
      * RSA最大加密明文大小

@@ -1,12 +1,20 @@
 package com.javayh.secure.transmit.configuration;
 
+import com.javayh.secure.transmit.annotation.SecureTransmit;
+import com.javayh.secure.transmit.bean.SecretType;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
-import com.javayh.secure.transmit.processor.EncryptDecryptProcessor;
+import com.javayh.secure.transmit.processor.SecureTransmitProcessor;
+import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+
+import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * @author haiji
@@ -14,13 +22,15 @@ import org.aspectj.lang.annotation.Pointcut;
 @Aspect
 public class SecretAspectConfiguration {
 
-    private final EncryptDecryptProcessor encryptionProcessor;
+    private final SecureTransmitProcessor encryptionProcessor;
 
     public SecretAspectConfiguration(SecretProperties secretProperties) {
-        this.encryptionProcessor = new EncryptDecryptProcessor(secretProperties);
+        this.encryptionProcessor = new SecureTransmitProcessor(secretProperties);
     }
 
-    @Pointcut("@annotation(com.javayh.secure.transmit.annotation.SecureCrypto)")
+    @Pointcut(
+            "@annotation(com.javayh.secure.transmit.annotation.SecureCrypto) || " +
+                    "@annotation(com.javayh.secure.transmit.annotation.SecureTransmit)")
     public void secretMethods() {
     }
 
@@ -31,8 +41,13 @@ public class SecretAspectConfiguration {
     @Before("secretMethods()")
     public void decryptReturnValues(JoinPoint joinPoint) throws Exception {
         Object[] args = joinPoint.getArgs();
+        SecureTransmit annotation = getAnnotation(joinPoint);
+        SecretType type = null;
+        if (Objects.nonNull(annotation)) {
+            type = annotation.type();
+        }
         for (Object arg : args) {
-            encryptionProcessor.decryptFields(arg);
+            encryptionProcessor.decryptFields(arg,type);
         }
     }
 
@@ -41,9 +56,32 @@ public class SecretAspectConfiguration {
      * 后置最终的加密处理
      */
     @AfterReturning(pointcut = "secretMethods()", returning = "returnValue")
-    public Object encryptReturnValues(Object returnValue) throws Exception {
-        return encryptionProcessor.encryptFields(returnValue);
+    public Object encryptReturnValues(JoinPoint joinPoint, Object returnValue) throws Exception {
+        SecureTransmit annotation = getAnnotation(joinPoint);
+        SecretType type = null;
+        if (Objects.nonNull(annotation)) {
+            type = annotation.type();
+        }
+        return encryptionProcessor.encryptFields(returnValue, type);
     }
 
+    /**
+     * 辅助方法：获取方法上的注解
+     */
+    @SneakyThrows
+    private SecureTransmit getAnnotation(JoinPoint joinPoint) {
+        // 获取目标方法的签名
+        Signature signature = joinPoint.getSignature();
+        // 获取目标类的 Class 对象
+        Class<?> targetClass = signature.getDeclaringType();
+        // 获取目标方法的方法名
+        String methodName = signature.getName();
+        // 获取目标方法的参数类型列表
+        Class<?>[] parameterTypes = ((MethodSignature) signature).getParameterTypes();
+        // 使用反射获取方法对象
+        Method method = targetClass.getMethod(methodName, parameterTypes);
+        // 获取方法上的注解
+        return method.getAnnotation(SecureTransmit.class);
+    }
 
 }

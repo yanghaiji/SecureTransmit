@@ -2,7 +2,7 @@ package com.javayh.secure.transmit.encrypt.aes;
 
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.constant.EncryptConstant;
-import com.javayh.secure.transmit.encrypt.EnDeTemplate;
+import com.javayh.secure.transmit.encrypt.SecureTransmitTemplate;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @version 1.0.0
  */
 @Slf4j
-public class AESCrypto implements EnDeTemplate {
+public class AESCrypto implements SecureTransmitTemplate {
 
     private static SecretKeySpec key;
 

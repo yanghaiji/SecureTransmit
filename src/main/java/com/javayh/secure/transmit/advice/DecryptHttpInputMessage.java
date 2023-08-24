@@ -2,7 +2,7 @@ package com.javayh.secure.transmit.advice;
 
 
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
-import com.javayh.secure.transmit.encrypt.MessageDigest;
+import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +44,7 @@ public class DecryptHttpInputMessage implements HttpInputMessage {
             if (!StringUtils.isEmpty(content)) {
                 String[] contents = content.split("\\|");
                 for (String value : contents) {
-                    json.append(MessageDigest.getInstance(secretProperties).decrypt(privateKey, value));
+                    json.append(SecureTransmitDigest.getInstance(secretProperties).decrypt(privateKey, value));
                 }
             }
             decryptBody = json.toString();

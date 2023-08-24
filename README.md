@@ -100,11 +100,11 @@ secure:
 #
 ```
 
-这里的`private-key` 和 `public-key` 在实际项目中需要换成自己的key，参考[数据加密](#_数据加密)
+这里的`private-key` 和 `public-key` 在实际项目中需要换成自己的key，参考[数据加密](#数据加密)
 
 ## 示例1 
 
-### 全字段的加解密
+### json全文加解密
 
 提供了两个注解用于全字段加解密 `@Encrypt` `@Decrypt` 在需要加解密的方法上使用注解即可
 
@@ -115,6 +115,11 @@ secure:
         ProbeLink test = ProbeLink.builder().appName("test").contextPath("sys/api").status(1).build();
         return test;
     }
+```
+
+返回值效果
+```
+"5FgayzyGz0m6D7AI61yAzsJEEblACsdqJFNBvB++KBns5VSnXAOVHOB7ww9ozvqicNLLyIyD2wqVO9bPxGmCVp2LBXKUsTGAe8D1PxCFTbuZpNhg0G/TwqpgZyk5Pxhd"
 ```
 
 
@@ -158,3 +163,38 @@ secure:
     }
 ```
 
+返回值效果
+
+```
+{
+    "id": null,
+    "appName": "1IJo//PzO5irNYxCzPtitw==",
+    "contextPath": "sys/api",
+    "method": null
+
+}
+```
+
+## 示例3
+
+### 指定字段的加解密
+
+提供了两个注解用于全字段加解密 `@SecureTransmit` 配置`@EncryptField` `@DecryptField` 实现指定加解密的算法，实现多场景的混动模式
+
+```
+    @SecureTransmit(type = SecretType.ECC)
+    @PostMapping(value = "/add/Encrypt/Decrypt")
+    public ProbeLink userDecrypt(@RequestBody ProbeLink probeLink) {
+        return probeLink;
+    }
+```
+
+```
+
+{
+    "id": null,
+    "appName": "BAGvlFt9rJwPyCG7elNWV91KqXzQK6PE4iTnkuYEHcWoN/xnjZ9FwdUHxXZrpageJ6hAqaOVAB0GoSA12nQe3HMiagBtQHmxHgKJQR8guPVUNRoJWKNYDygrToUGUL7kO/TTlH7rLnNdlExKUmAyugL55ic0u4HJ/fDzicuD6S5EtXrRFJjJDUfLPbAPoPxcqt/o2hIb/VrK19u9Vw==",
+    "contextPath": "sys/api",
+    "method": "BAG2ekWI3+XkrljmUKTxJCZUW2KMV8VnsY35EESiF5j9mjzRZOZxnYL9hhPv+LrtpAD+1ZuywQ7g5G9OFLKgA0zEBgGyEqkMs8dJHkDYw2VCRhImOyROma1uspF+EC7VsJ1/Dh4a/kda2Ybx5TTsrJiRpURzTrK9Ewb6KmlED/zLk9LVn4qj/vEAMv1F1GtnJNiuARvvgo9R1seXaQ==",
+   }
+```

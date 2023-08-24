@@ -9,7 +9,7 @@ package com.javayh.secure.transmit.encrypt;
  * @version 1.0.0
  * @since 2023-08-18
  */
-public interface EnDeTemplate {
+public interface SecureTransmitTemplate {
 
     /**
      * 数据加密
