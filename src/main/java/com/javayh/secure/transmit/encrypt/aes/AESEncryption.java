@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @version 1.0.0
  */
 @Slf4j
-public class AESCrypto implements SecureTransmitTemplate {
+public class AESEncryption implements SecureTransmitTemplate {
 
     private static SecretKeySpec key;
 
@@ -35,7 +35,7 @@ public class AESCrypto implements SecureTransmitTemplate {
 
     private SecretProperties secretProperties;
 
-    public AESCrypto(SecretProperties secretProperties) {
+    public AESEncryption(SecretProperties secretProperties) {
         this.secretProperties = secretProperties;
     }
 

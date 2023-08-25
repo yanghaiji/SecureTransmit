@@ -23,9 +23,12 @@ import java.util.Objects;
 public class SecretAspectConfiguration {
 
     private final SecureTransmitProcessor encryptionProcessor;
+    private final SecretProperties secretProperties;
 
-    public SecretAspectConfiguration(SecretProperties secretProperties) {
+    public SecretAspectConfiguration(SecretProperties secretProperties,
+                                     SecretProperties secretProperties1) {
         this.encryptionProcessor = new SecureTransmitProcessor(secretProperties);
+        this.secretProperties = secretProperties1;
     }
 
     @Pointcut(
@@ -42,12 +45,13 @@ public class SecretAspectConfiguration {
     public void decryptReturnValues(JoinPoint joinPoint) throws Exception {
         Object[] args = joinPoint.getArgs();
         SecureTransmit annotation = getAnnotation(joinPoint);
-        SecretType type = null;
+        // bug fix type is null
+        SecretType type = secretProperties.getType();
         if (Objects.nonNull(annotation)) {
             type = annotation.type();
         }
         for (Object arg : args) {
-            encryptionProcessor.decryptFields(arg,type);
+            encryptionProcessor.decryptFields(arg, type);
         }
     }
 
@@ -58,7 +62,8 @@ public class SecretAspectConfiguration {
     @AfterReturning(pointcut = "secretMethods()", returning = "returnValue")
     public Object encryptReturnValues(JoinPoint joinPoint, Object returnValue) throws Exception {
         SecureTransmit annotation = getAnnotation(joinPoint);
-        SecretType type = null;
+        // bug fix type is null , default is secretProperties.getType()
+        SecretType type = secretProperties.getType();
         if (Objects.nonNull(annotation)) {
             type = annotation.type();
         }

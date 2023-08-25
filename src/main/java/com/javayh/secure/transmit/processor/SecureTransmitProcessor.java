@@ -3,12 +3,9 @@ package com.javayh.secure.transmit.processor;
 import com.javayh.secure.transmit.annotation.DecryptField;
 import com.javayh.secure.transmit.annotation.EncryptField;
 import com.javayh.secure.transmit.bean.SecretType;
-import com.javayh.secure.transmit.configuration.properties.AesProperties;
-import com.javayh.secure.transmit.configuration.properties.EccProperties;
-import com.javayh.secure.transmit.configuration.properties.RsaProperties;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
-import com.javayh.secure.transmit.exception.InvalidAlgorithmException;
+import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -37,8 +34,7 @@ public class SecureTransmitProcessor {
     public SecureTransmitProcessor(SecretProperties secretProperties) {
         this.isShowLog = secretProperties.getIsShowLog();
         this.secretProperties = secretProperties;
-        SecretType type = secretProperties.getType();
-        initializeKeys(type);
+        LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
     }
 
 
@@ -50,13 +46,9 @@ public class SecureTransmitProcessor {
      */
     public <T> T encryptFields(T object, SecretType type) throws Exception {
         try {
-            Field[] fields = object.getClass().getDeclaredFields();
-            SecretProperties properties = new SecretProperties();
-            BeanUtils.copyProperties(secretProperties, properties);
-            if (Objects.nonNull(type)) {
-                properties.setType(type);
-                initializeKeys(type);
-            }
+            CopyBean copyBean = new CopyBean<T>(object, type).invoke();
+            Field[] fields = copyBean.getFields();
+            SecretProperties properties = copyBean.getProperties();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(EncryptField.class)) {
                     field.setAccessible(true);
@@ -70,7 +62,7 @@ public class SecureTransmitProcessor {
                 }
             }
         } catch (Exception e) {
-            log.error("EncryptDecryptProcessor.encryptFields() 异常 {}", e.getMessage());
+            log.error("EncryptDecryptProcessor.encryptFields() 异常 {}", e.getMessage(), e);
         } finally {
             cleanUp();
         }
@@ -84,13 +76,9 @@ public class SecureTransmitProcessor {
      */
     public <T> void decryptFields(T object, SecretType type) {
         try {
-            Field[] fields = object.getClass().getDeclaredFields();
-            SecretProperties properties = new SecretProperties();
-            BeanUtils.copyProperties(secretProperties, properties);
-            if (Objects.nonNull(type)) {
-                properties.setType(type);
-                initializeKeys(type);
-            }
+            CopyBean copyBean = new CopyBean<T>(object, type).invoke();
+            Field[] fields = copyBean.getFields();
+            SecretProperties properties = copyBean.getProperties();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DecryptField.class)) {
                     field.setAccessible(true);
@@ -104,39 +92,12 @@ public class SecureTransmitProcessor {
                 }
             }
         } catch (Exception e) {
-            log.error("EncryptDecryptProcessor.decryptFields() 异常 {}", e.getMessage());
+            log.error("EncryptDecryptProcessor.decryptFields() 异常 {}", e.getMessage(), e);
         } finally {
             cleanUp();
         }
     }
 
-    private void initializeKeys(SecretType type) {
-        RsaProperties rsa = secretProperties.getRsa();
-        AesProperties aes = secretProperties.getAes();
-        EccProperties ecc = secretProperties.getEcc();
-        switch (type) {
-            case RSA:
-                this.publicKey.set(rsa.getPublicKey());
-                this.privateKey.set(rsa.getPrivateKey());
-                break;
-            case AES:
-                String key = aes.getKey();
-                this.publicKey.set(key);
-                this.privateKey.set(key);
-                break;
-            case ECC:
-                this.publicKey.set(ecc.getPublicKey());
-                this.privateKey.set(ecc.getPrivateKey());
-                break;
-            case DES:
-            case DES3:
-            case TF:
-            case BF:
-            case DH:
-            default:
-                throw new InvalidAlgorithmException("Invalid algorithm: " + type.name());
-        }
-    }
 
     /**
      * 清除当前的 缓存key
@@ -146,4 +107,37 @@ public class SecureTransmitProcessor {
         publicKey.remove();
     }
 
+    /**
+     * 公共处理的封装
+     */
+    private class CopyBean<T> {
+        private final T object;
+        private final SecretType type;
+        private Field[] fields;
+        private SecretProperties properties;
+
+        public CopyBean(T object, SecretType type) {
+            this.object = object;
+            this.type = type;
+        }
+
+        public Field[] getFields() {
+            return fields;
+        }
+
+        public SecretProperties getProperties() {
+            return properties;
+        }
+
+        public CopyBean invoke() {
+            fields = object.getClass().getDeclaredFields();
+            properties = new SecretProperties();
+            BeanUtils.copyProperties(secretProperties, properties);
+            if (Objects.nonNull(type)) {
+                properties.setType(type);
+                LocalKeysInitFactory.initLocalKeys(secretProperties, SecureTransmitProcessor.this.publicKey, SecureTransmitProcessor.this.privateKey);
+            }
+            return this;
+        }
+    }
 }

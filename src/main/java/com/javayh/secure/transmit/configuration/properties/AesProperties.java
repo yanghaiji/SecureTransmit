@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * <p>
- * 安全信息配置
+ * aes 加密配置
  * </p>
  *
  * @author hai ji

@@ -1,5 +1,8 @@
 package com.javayh.secure.transmit.encrypt;
 
+import javax.crypto.NoSuchPaddingException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * <p>
  *

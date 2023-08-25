@@ -22,7 +22,7 @@ import java.security.PublicKey;
  * @since 2020/3/5
  */
 @Slf4j
-public class RsaCrypto implements SecureTransmitTemplate {
+public class RsaEncryption implements SecureTransmitTemplate {
 
     /**
      * RSA最大加密明文大小

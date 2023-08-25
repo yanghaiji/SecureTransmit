@@ -155,4 +155,24 @@ public class DataKeyGenerator {
     }
 
 
+    public static class AESGCM {
+        // 生成 AES-GCM 密钥
+        public static SecretKey generateAESGCMKey() throws NoSuchAlgorithmException {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            // key size: must be equal to 128, 192 or 256 使用 256 位密钥
+            keyGenerator.init(256);
+            return keyGenerator.generateKey();
+        }
+
+        // 将密钥转换为字符串
+        public static String keyToString(SecretKey secretKey) {
+            byte[] encodedKey = secretKey.getEncoded();
+            return Base64Util.encode(encodedKey);
+        }
+
+        public static void main(String[] args) throws NoSuchAlgorithmException {
+            String s = keyToString(generateAESGCMKey());
+            System.out.println(s);
+        }
+    }
 }

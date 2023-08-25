@@ -12,6 +12,8 @@ package com.javayh.secure.transmit.bean;
 public enum SecretType {
     AES,
 
+    GCM,
+
     RSA,
 
     ECC,
