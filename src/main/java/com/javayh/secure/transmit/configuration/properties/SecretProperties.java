@@ -1,11 +1,8 @@
 package com.javayh.secure.transmit.configuration.properties;
 
 import com.javayh.secure.transmit.bean.SecretType;
-import com.javayh.secure.transmit.exception.ParameterException;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Objects;
 
 /**
  * <p>
@@ -49,6 +46,11 @@ public class SecretProperties {
      * ecc 配置
      */
     private EccProperties ecc;
+
+    /**
+     * gcm 配置
+     */
+    private GcmProperties gcm;
 
 
 }

@@ -2,8 +2,8 @@ package com.javayh.secure.transmit.advice;
 
 import com.javayh.secure.transmit.annotation.Decrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
+import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,8 +23,17 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
 
     private boolean encrypt;
 
-    @Autowired
-    private SecretProperties secretProperties;
+    private final SecretProperties secretProperties;
+    /**
+     * 密钥和机密算法的配置
+     */
+    private final ThreadLocal<String> publicKey = new ThreadLocal<>();
+    private final ThreadLocal<String> privateKey = new ThreadLocal<>();
+
+    public DecryptRequestBodyAdvice(SecretProperties secretProperties) {
+        this.secretProperties = secretProperties;
+        LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
+    }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -44,10 +53,12 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                                            Class<? extends HttpMessageConverter<?>> converterType) {
         if (encrypt) {
             try {
-                String privateKey = Objects.isNull(secretProperties.getAes().getKey()) ? secretProperties.getRsa().getPrivateKey() : secretProperties.getAes().getKey();
-                return new DecryptHttpInputMessage(inputMessage, privateKey, secretProperties, secretProperties.getIsShowLog());
+                LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
+                return new DecryptHttpInputMessage(inputMessage, privateKey.get(), secretProperties, secretProperties.getIsShowLog());
             } catch (Exception e) {
-                log.error("Decryption failed", e);
+                log.error("Decryption failed {}", e.getMessage(), e);
+            } finally {
+                cleanUp();
             }
         }
         return inputMessage;
@@ -59,5 +70,13 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
         return body;
     }
 
+
+    /**
+     * 清除当前的 缓存key
+     */
+    private void cleanUp() {
+        privateKey.remove();
+        publicKey.remove();
+    }
 
 }

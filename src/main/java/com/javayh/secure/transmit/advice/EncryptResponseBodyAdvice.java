@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.javayh.secure.transmit.annotation.Encrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
+import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -23,16 +24,20 @@ import java.util.Objects;
 @RestControllerAdvice
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
-
     private boolean encrypt;
 
     private final SecretProperties secretProperties;
 
+    private final ThreadLocal<String> publicKey = new ThreadLocal<>();
+    private final ThreadLocal<String> privateKey = new ThreadLocal<>();
+
+
     public EncryptResponseBodyAdvice(SecretProperties secretProperties) {
         this.secretProperties = secretProperties;
+        LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
     }
 
-    private static ThreadLocal<Boolean> encryptLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> ENCRYPT_LOCAL = new ThreadLocal<>();
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -43,28 +48,40 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        Boolean status = encryptLocal.get();
+        Boolean status = ENCRYPT_LOCAL.get();
         if (null != status && !status) {
-            encryptLocal.remove();
+            ENCRYPT_LOCAL.remove();
             return body;
         }
         if (encrypt) {
-            String publicKey = Objects.isNull(secretProperties.getAes().getKey()) ? secretProperties.getRsa().getPublicKey() : secretProperties.getAes().getKey();
             try {
+                // bug fix key is null
+                LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
                 String content = JSON.toJSONString(body);
-                if (!StringUtils.hasText(publicKey)) {
+                if (!StringUtils.hasText(publicKey.get())) {
                     throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
-                String result = SecureTransmitDigest.getInstance(secretProperties).encrypt(publicKey, content);
+                String result = SecureTransmitDigest.getInstance(secretProperties).encrypt(publicKey.get(), content);
                 if (secretProperties.getIsShowLog()) {
                     log.info("Pre-encrypted data：{}，After encryption：{}", content, result);
                 }
                 return result;
             } catch (Exception e) {
-                log.error("Encrypted data exception", e);
+                log.error("Encrypted data exception {}", e.getMessage(), e);
                 throw new SecurityException("Encrypted data exception");
+            } finally {
+                cleanUp();
             }
         }
         return body;
+    }
+
+
+    /**
+     * 清除当前的 缓存key
+     */
+    private void cleanUp() {
+        privateKey.remove();
+        publicKey.remove();
     }
 }
