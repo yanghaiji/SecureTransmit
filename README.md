@@ -72,7 +72,7 @@ mvn clean package install
 <dependency>
     <groupId>com.javayh.secure.transmit</groupId>
     <artifactId>secure.transmit.boot.starter</artifactId>
-    <version>1.0.0</version>
+    <version>2.6.2</version>
 </dependency>
 ```
 
@@ -84,6 +84,8 @@ secure:
     enable: true
     is-show-log: true
     type: aes
+    # 序列化方式 
+    serialization: com.javayh.secure.transmit.serialize.FastJsonSerialization
     # aes 加解密
     aes:
         # 自定义的 iv 加言
@@ -102,6 +104,21 @@ secure:
 ```
 
 这里的`private-key` 和 `public-key` 在实际项目中需要换成自己的key，参考[数据加密](#数据加密)
+
+
+## 序列化方式
+
+- Serialization
+服务内提供了标准的序列化接口，模式采用了`FastJson`，支持自定义序列化方式
+
+### 实现自定义序列化方式的步骤
+
+- 实现`Serialization`接口
+- 修改`secure.transmit.serialization` 的值为，自定序列化名字的全路径
+- `在resources` 下创建 `META-INF/services` 文件夹(`resources/META-INF/services`)
+- 创建一个名字为 `com.javayh.secure.transmit.serialize.Serialization` 的文件，内容为自定序列化名字的全路径即可
+
+
 
 ## 示例1 
 

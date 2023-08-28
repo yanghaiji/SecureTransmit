@@ -1,7 +1,7 @@
 package com.javayh.secure.transmit.processor;
 
-import com.javayh.secure.transmit.annotation.DecryptField;
-import com.javayh.secure.transmit.annotation.EncryptField;
+import com.javayh.secure.transmit.annotation.field.DecryptField;
+import com.javayh.secure.transmit.annotation.field.EncryptField;
 import com.javayh.secure.transmit.bean.SecretType;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;

@@ -1,6 +1,6 @@
 package com.javayh.secure.transmit.advice;
 
-import com.javayh.secure.transmit.annotation.Decrypt;
+import com.javayh.secure.transmit.annotation.json.Decrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,16 @@ import java.util.Objects;
 @ControllerAdvice
 public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
 
-
+    /**
+     * 是否开启加密 {@link SecretProperties#getEnable()}
+     */
     private boolean encrypt;
 
+    /**
+     * 安全信息配置 {@link SecretProperties}
+     */
     private final SecretProperties secretProperties;
+
     /**
      * 密钥和机密算法的配置
      */
@@ -44,7 +50,8 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
     }
 
     @Override
-    public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter,
+                                  Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return body;
     }
 

@@ -1,10 +1,10 @@
 package com.javayh.secure.transmit.advice;
 
-import com.alibaba.fastjson.JSON;
-import com.javayh.secure.transmit.annotation.Encrypt;
+import com.javayh.secure.transmit.annotation.json.Encrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
 import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
+import com.javayh.secure.transmit.util.SerializationStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -47,7 +47,8 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                  ServerHttpRequest request, ServerHttpResponse response) {
         Boolean status = ENCRYPT_LOCAL.get();
         if (null != status && !status) {
             ENCRYPT_LOCAL.remove();
@@ -57,7 +58,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             try {
                 // bug fix key is null
                 LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
-                String content = JSON.toJSONString(body);
+                String content = new SerializationStrategy().serialize(body);
                 if (!StringUtils.hasText(publicKey.get())) {
                     throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
