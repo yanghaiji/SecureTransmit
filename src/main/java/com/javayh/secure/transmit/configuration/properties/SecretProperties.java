@@ -33,6 +33,11 @@ public class SecretProperties {
     private Boolean isShowLog = false;
 
     /**
+     * 使用指定的序列化方式
+     */
+    private String serialization = "com.javayh.secure.transmit.serialize.FastJsonSerialization";
+
+    /**
      * aes 配置
      */
     private AesProperties aes;

@@ -1,4 +1,4 @@
-package com.javayh.secure.transmit.annotation;
+package com.javayh.secure.transmit.annotation.json;
 
 import java.lang.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.javayh.secure.transmit.annotation;
+package com.javayh.secure.transmit.annotation.field;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EncryptField {
+public @interface DecryptField {
 }
