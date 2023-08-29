@@ -25,8 +25,9 @@
 
 - [Gitee 地址 https://gitee.com/YangHaiJi/SecureTransmit](https://gitee.com/YangHaiJi/SecureTransmit)
 
-> 最新版都在github上，gitee会略微之后一些，如果对您有所帮助可以给个star
-   
+> github上为最新版本，gitee上会略微滞后一些
+> 如果对您有所帮助可以给个star， ✨不迷路，您的star是我们编写的动力 🙏
+
 # 加密算法的规划
 
 ✅ 支持    ⬜ 暂未支持
