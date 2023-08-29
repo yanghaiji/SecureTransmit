@@ -2,6 +2,7 @@ package com.javayh.secure.transmit.advice;
 
 import com.javayh.secure.transmit.annotation.json.Decrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
+import com.javayh.secure.transmit.exception.SecretException;
 import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -64,6 +65,7 @@ public class DecryptRequestBodyAdvice implements RequestBodyAdvice {
                 return new DecryptHttpInputMessage(inputMessage, privateKey.get(), secretProperties, secretProperties.getIsShowLog());
             } catch (Exception e) {
                 log.error("Decryption failed {}", e.getMessage(), e);
+                throw new SecretException("DecryptRequestBodyAdvice.class error ");
             } finally {
                 cleanUp();
             }

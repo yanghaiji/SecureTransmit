@@ -25,10 +25,9 @@ public class SecretAspectConfiguration {
     private final SecureTransmitProcessor encryptionProcessor;
     private final SecretProperties secretProperties;
 
-    public SecretAspectConfiguration(SecretProperties secretProperties,
-                                     SecretProperties secretProperties1) {
+    public SecretAspectConfiguration(SecretProperties secretProperties) {
         this.encryptionProcessor = new SecureTransmitProcessor(secretProperties);
-        this.secretProperties = secretProperties1;
+        this.secretProperties = secretProperties;
     }
 
     @Pointcut(
