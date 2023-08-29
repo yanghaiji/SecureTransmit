@@ -8,9 +8,9 @@
 </h1>
 
 <p align="center">
-  <a href="https://travis-ci.org/standard/standard"><img src="https://img.shields.io/travis/standard/standard/master.svg" alt="travis"></a>
-  <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-2.6.2-brightgreen)" alt="npm version"></a>
-  <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - Java Style Guide"></a>
+    <a href="https://spring.io/projects"><img src='https://img.shields.io/badge/license-Apache%202-borightgreen' alt='License'/></a>
+    <a href="https://spring.io/projects/spring-boot"><img src="https://img.shields.io/badge/Spring%20Boot-2.6.2-brightgreen)" alt="npm version"></a>
+    <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - Java Style Guide"></a>
 </p>
 
 
@@ -19,6 +19,14 @@
 值得一提的是，`SecureTransmit`秉承高标准的加密实践，全面支持行业主流的`RSA`、`AES`等加解密算法(更加详细的加密算法请查看[加密算法的规划](#加密算法的规划))，为用户提供可信赖的安全通信通道。
 无论是在数据的传输、存储，亦或是处理过程中，`SecureTransmit`均旨在确保数据的机密性与完整性，为您的敏感信息提供最优保障。
 
+# 源代码地址
+
+- [Github 地址 https://github.com/yanghaiji/SecureTransmit](https://github.com/yanghaiji/SecureTransmit)
+
+- [Gitee 地址 https://gitee.com/YangHaiJi/SecureTransmit](https://gitee.com/YangHaiJi/SecureTransmit)
+
+> 最新版都在github上，gitee会略微之后一些，如果对您有所帮助可以给个star
+   
 # 加密算法的规划
 
 ✅ 支持    ⬜ 暂未支持
@@ -54,6 +62,9 @@
         KeyPair keyPair = DataKeyGenerator.ECC.generateKeyPair();
         String publicKey = DataKeyGenerator.ECC.keyToString(keyPair.getPublic());
         String privateKey = DataKeyGenerator.ECC.keyToString(keyPair.getPrivate());
+        //gcm
+        SecretKey secretKey = DataKeyGenerator.AESGCM.generateAESGCMKey();
+        String gcmKey = DataKeyGenerator.AESGCM.keyToString(secretKey);
     }
 ```
 
@@ -92,15 +103,20 @@ secure:
       iv: 长度为10的iv
         # 生成的 key
       key: 生成的key
+    gcm:
+        # 生成的 key
+      key: 生成的key
+        # 自定义的 iv 加言
+      iv: 长度为10的iv
     # rsa 加解密
-#   rsa:
-#     private-key: 生成的私钥
-#     public-key: 生成公钥
+    rsa:
+      private-key: 生成的私钥
+      public-key: 生成公钥
     # ecc 加解密
-#   ecc:
-#     private-key: 生成的私钥
-#     public-key: 生成公钥
-#
+    ecc:
+      private-key: 生成的私钥
+      public-key: 生成公钥
+ 
 ```
 
 这里的`private-key` 和 `public-key` 在实际项目中需要换成自己的key，参考[数据加密](#数据加密)
