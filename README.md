@@ -64,8 +64,8 @@
         String publicKey = DataKeyGenerator.ECC.keyToString(keyPair.getPublic());
         String privateKey = DataKeyGenerator.ECC.keyToString(keyPair.getPrivate());
         //gcm
-        SecretKey secretKey = DataKeyGenerator.AESGCM.generateAESGCMKey();
-        String gcmKey = DataKeyGenerator.AESGCM.keyToString(secretKey);
+        SecretKey secretKey = DataKeyGenerator.GCM.generateAESGCMKey();
+        String gcmKey = DataKeyGenerator.GCM.keyToString(secretKey);
     }
 ```
 
