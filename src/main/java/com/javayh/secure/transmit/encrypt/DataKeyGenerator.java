@@ -185,7 +185,7 @@ public class DataKeyGenerator {
     }
 
 
-    public static class AESGCM {
+    public static class GCM {
         // 生成 AES-GCM 密钥
         public static SecretKey generateAESGCMKey() throws NoSuchAlgorithmException {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
