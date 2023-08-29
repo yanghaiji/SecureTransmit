@@ -44,11 +44,11 @@ public class EccEncryption implements SecureTransmitTemplate {
         Cipher cipher = Cipher.getInstance(EncryptConstant.ECIES, EncryptConstant.BC);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        return Base64Util.encode(encryptedBytes);
     }
 
     /**
-     * @param priKey        {@link EccProperties#getPrivateKey()} ()} 解密私钥
+     * @param priKey        解密私钥 {@link EccProperties#getPrivateKey()}
      * @param encryptedData 待解密的数据
      */
     @Override
@@ -59,7 +59,7 @@ public class EccEncryption implements SecureTransmitTemplate {
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] encryptedBytes = Base64Util.decode(encryptedData);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes);
+        return Base64Util.encode(decryptedBytes);
     }
 
     /**
@@ -82,12 +82,4 @@ public class EccEncryption implements SecureTransmitTemplate {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
     }
 
-    public static void main(String[] args) throws Exception {
-        EccEncryption eccCrypto = new EccEncryption();
-        String encrypt = eccCrypto.encrypt("MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBUx2lpwkU4Tsp7Ew3taAodarrru30NBysXqJJcO+58HwleWTfvQN+zMkGoPAY56+nNCD4qJlPt9B4MGEMHZsg2iEAk5tUd6TSe4QuHTs8jeKiPQhJd5/jqpBAH9fVYCwFjvlqF282rL7LKoHqyBhuGQsd4nOguZB0rymQ3gRW7J9ReZA=","test");
-        String decrypt = eccCrypto.decrypt("MIH3AgEAMBAGByqGSM49AgEGBSuBBAAjBIHfMIHcAgEBBEIBaBKm6dbDCpu0+dfzuAZQWReoE3Se2Z/Ehtj2vvwnl98K/qEEKcbeTUSZECvmAPHhkVbjiTqO2ZH3wya9OxgvYtagBwYFK4EEACOhgYkDgYYABAFTHaWnCRThOynsTDe1oCh1quuu7fQ0HKxeoklw77nwfCV5ZN+9A37MyQag8Bjnr6c0IPiomU+30HgwYQwdmyDaIQCTm1R3pNJ7hC4dOzyN4qI9CEl3n+OqkEAf19VgLAWO+WoXbzasvssqgerIGG4ZCx3ic6C5kHSvKZDeBFbsn1F5kA== ", encrypt);
-
-        System.out.println(encrypt);
-        System.out.println(decrypt);
-    }
 }

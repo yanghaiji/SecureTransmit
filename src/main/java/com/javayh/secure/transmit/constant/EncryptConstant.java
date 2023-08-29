@@ -35,7 +35,9 @@ public interface EncryptConstant {
 
 	String PRIVATE_KEY = "RSAPrivateKey";
 
-	String ALGORITHM = "RSA/ECB/PKCS7Padding";
+	String ALGORITHM = "RSA/ECB/PKCS1Padding";
+
+	String RSA_SIGNATURE = "SHA256withRSA";
 
 	String SHA = "SHA-256";
 

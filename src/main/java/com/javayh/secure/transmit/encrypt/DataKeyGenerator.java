@@ -113,16 +113,46 @@ public class DataKeyGenerator {
         public static PublicKey getPublicKey(String key) throws Exception {
             byte[] keyBytes = Base64.decodeBase64(key);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance(EncryptConstant.KEY_ALGORITHM);
             return keyFactory.generatePublic(keySpec);
         }
 
         public static PrivateKey getPrivateKey(String key) throws Exception {
             byte[] keyBytes = Base64.decodeBase64(key);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance(EncryptConstant.KEY_ALGORITHM);
             return keyFactory.generatePrivate(keySpec);
         }
+
+        /**
+         * 使用私钥进行签名
+         *
+         * @param data       待验签的数据
+         * @param privateKey 私钥
+         */
+        public static String signData(String data, String privateKey) throws Exception {
+            Signature signature = Signature.getInstance(EncryptConstant.RSA_SIGNATURE);
+            signature.initSign(getPrivateKey(privateKey));
+            signature.update(data.getBytes());
+            byte[] signBytes = signature.sign();
+            return Base64Util.encode(signBytes);
+        }
+
+        /**
+         * 使用公钥进行验签
+         *
+         * @param data      待验签的数据
+         * @param signature 前言数据
+         * @param publicKey 公钥
+         */
+        public static boolean verifySignature(String data, String signature, String publicKey) throws Exception {
+            Signature verifier = Signature.getInstance(EncryptConstant.RSA_SIGNATURE);
+            verifier.initVerify(getPublicKey(publicKey));
+            verifier.update(data.getBytes());
+            byte[] signatureBytes = Base64Util.decode(signature);
+            return verifier.verify(signatureBytes);
+        }
+
     }
 
 
@@ -150,7 +180,7 @@ public class DataKeyGenerator {
         @SneakyThrows
         public static String keyToString(Key key) {
             byte[] keyBytes = key.getEncoded();
-            return java.util.Base64.getEncoder().encodeToString(keyBytes);
+            return Base64Util.encode(keyBytes);
         }
     }
 
@@ -170,9 +200,5 @@ public class DataKeyGenerator {
             return Base64Util.encode(encodedKey);
         }
 
-        public static void main(String[] args) throws NoSuchAlgorithmException {
-            String s = keyToString(generateAESGCMKey());
-            System.out.println(s);
-        }
     }
 }

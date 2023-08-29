@@ -5,6 +5,7 @@ import com.javayh.secure.transmit.annotation.field.EncryptField;
 import com.javayh.secure.transmit.bean.SecretType;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
+import com.javayh.secure.transmit.exception.SecretException;
 import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -44,13 +45,13 @@ public class SecureTransmitProcessor {
      * @param object {@link Object} 需要处理的对象
      * @return {@link Object} 加密后的数据
      */
-    public <T> T encryptFields(T object, SecretType type) throws Exception {
+    public <T> T encryptFields(T object, SecretType type) {
         try {
             CopyBean copyBean = new CopyBean<T>(object, type).invoke();
             Field[] fields = copyBean.getFields();
             SecretProperties properties = copyBean.getProperties();
             for (Field field : fields) {
-                if (field.isAnnotationPresent(EncryptField.class)) {
+                if (field.isAnnotationPresent(EncryptField.class) && !field.getAnnotation(EncryptField.class).ignore()) {
                     field.setAccessible(true);
                     Object fieldValue = field.get(object);
                     if (Objects.nonNull(fieldValue)) {
@@ -63,6 +64,7 @@ public class SecureTransmitProcessor {
             }
         } catch (Exception e) {
             log.error("EncryptDecryptProcessor.encryptFields() 异常 {}", e.getMessage(), e);
+            throw new SecretException("data encrypt error.");
         } finally {
             cleanUp();
         }
@@ -80,7 +82,7 @@ public class SecureTransmitProcessor {
             Field[] fields = copyBean.getFields();
             SecretProperties properties = copyBean.getProperties();
             for (Field field : fields) {
-                if (field.isAnnotationPresent(DecryptField.class)) {
+                if (field.isAnnotationPresent(DecryptField.class) && !field.getAnnotation(DecryptField.class).ignore()) {
                     field.setAccessible(true);
                     Object fieldValue = field.get(object);
                     if (Objects.nonNull(fieldValue)) {
@@ -93,6 +95,7 @@ public class SecureTransmitProcessor {
             }
         } catch (Exception e) {
             log.error("EncryptDecryptProcessor.decryptFields() 异常 {}", e.getMessage(), e);
+            throw new SecretException("data decrypt error.");
         } finally {
             cleanUp();
         }
