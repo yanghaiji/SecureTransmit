@@ -1,13 +1,17 @@
 package com.javayh.secure.transmit.util;
 
 import com.javayh.secure.transmit.factory.SerializationFactory;
+import com.javayh.secure.transmit.factory.SerializationFactoryBean;
 import com.javayh.secure.transmit.serialize.Serialization;
 
 /**
  * 根据不同的实现，选择不同的序列化方式
+ * <p>
+ * 绝的实现可以参考 {@link SerializationFactoryBean}
  *
  * @author haiji
  */
+@Deprecated
 public class SerializationStrategy {
 
     private final Serialization strategy;

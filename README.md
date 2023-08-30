@@ -129,11 +129,14 @@ secure:
 服务内提供了标准的序列化接口，模式采用了`FastJson`，支持自定义序列化方式
 
 ### 实现自定义序列化方式的步骤
-
-- 实现`Serialization`接口
+>
+> 修改了原有的实现逻辑，将其托管到spring容器中，减少配置的方式
+>
+- 实现`Serialization`接口，将其注入到spring容器中
 - 修改`secure.transmit.serialization` 的值为，自定序列化名字的全路径
-- `在resources` 下创建 `META-INF/services` 文件夹(`resources/META-INF/services`)
-- 创建一个名字为 `com.javayh.secure.transmit.serialize.Serialization` 的文件，内容为自定序列化名字的全路径即可
+
+- ~~在`resources` 下创建 `META-INF/services` 文件夹(`resources/META-INF/services`)~~
+- ~~创建一个名字为 `com.javayh.secure.transmit.serialize.Serialization` 的文件，内容为自定序列化名字的全路径即可~~
 
 
 
