@@ -20,7 +20,8 @@ import java.lang.annotation.*;
 @Import({SecretProperties.class,
         EncryptResponseBodyAdvice.class,
         DecryptRequestBodyAdvice.class,
-        SecretAspectConfiguration.class})
+        SecretAspectConfiguration.class,
+        SerializationConfig.class})
 public @interface SecureTransmitAutoConfiguration {
 
 }

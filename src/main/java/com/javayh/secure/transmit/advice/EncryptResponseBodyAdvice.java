@@ -4,7 +4,7 @@ import com.javayh.secure.transmit.annotation.json.Encrypt;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.SecureTransmitDigest;
 import com.javayh.secure.transmit.factory.LocalKeysInitFactory;
-import com.javayh.secure.transmit.util.SerializationStrategy;
+import com.javayh.secure.transmit.factory.SerializationFactoryBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -28,15 +28,16 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     private final SecretProperties secretProperties;
 
-    private final ThreadLocal<String> publicKey = new ThreadLocal<>();
-    private final ThreadLocal<String> privateKey = new ThreadLocal<>();
+    private final SerializationFactoryBean serializationFactoryBean;
 
-
-    public EncryptResponseBodyAdvice(SecretProperties secretProperties) {
+    public EncryptResponseBodyAdvice(SecretProperties secretProperties, SerializationFactoryBean serializationFactoryBean) {
         this.secretProperties = secretProperties;
+        this.serializationFactoryBean = serializationFactoryBean;
         LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
     }
 
+    private final ThreadLocal<String> publicKey = new ThreadLocal<>();
+    private final ThreadLocal<String> privateKey = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> ENCRYPT_LOCAL = new ThreadLocal<>();
 
     @Override
@@ -58,7 +59,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             try {
                 // bug fix key is null
                 LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
-                String content = new SerializationStrategy().serialize(body);
+                String content = serializationFactoryBean.serialize(body);
                 if (!StringUtils.hasText(publicKey.get())) {
                     throw new NullPointerException("Please configure secure.transmit.encrypt.publicKey parameter!");
                 }
