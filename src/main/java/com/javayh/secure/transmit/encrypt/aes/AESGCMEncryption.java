@@ -4,12 +4,15 @@ import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.constant.EncryptConstant;
 import com.javayh.secure.transmit.encrypt.SecureTransmitTemplate;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;
+import com.javayh.secure.transmit.exception.EncryptionException;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * <p>
@@ -30,14 +33,24 @@ public class AESGCMEncryption implements SecureTransmitTemplate {
     }
 
     @Override
-    public String encrypt(String keyAsString, String data) throws Exception {
+    public String encrypt(String keyAsString, String data) {
         SecretKey secretKey = convertStringToKey(keyAsString);
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(EncryptConstant.AES_GCM);
+            GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv.getBytes());
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
+            return Base64Util.encode(cipher.doFinal(data.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                InvalidKeyException |
+                InvalidAlgorithmParameterException |
+                IllegalBlockSizeException |
+                BadPaddingException e) {
+            log.error("GCM 解密异常 {}", e.getMessage(), e);
+            throw new EncryptionException(e.getMessage());
+        }
 
-        Cipher cipher = Cipher.getInstance(EncryptConstant.AES_GCM);
-        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv.getBytes());
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
-
-        return Base64Util.encode(cipher.doFinal(data.getBytes(StandardCharsets.UTF_8)));
     }
 
 
@@ -53,12 +66,13 @@ public class AESGCMEncryption implements SecureTransmitTemplate {
             return Base64Util.encode(decryptedBytes);
         } catch (Exception e) {
             log.error("AESGCMEncryption 解密失败 {}", e.getMessage());
+            throw new EncryptionException(e.getMessage());
         }
-        return null;
     }
 
     /**
      * 将字符串转换为密钥
+     *
      * @param keyAsString 密钥key
      */
     private SecretKey convertStringToKey(String keyAsString) {

@@ -4,6 +4,7 @@ import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.constant.EncryptConstant;
 import com.javayh.secure.transmit.encrypt.SecureTransmitTemplate;
 import com.javayh.secure.transmit.encrypt.base.Base64Util;
+import com.javayh.secure.transmit.exception.EncryptionException;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.BadPaddingException;
@@ -43,18 +44,19 @@ public class AESEncryption implements SecureTransmitTemplate {
      * @param key     加密的key
      * @param encData
      * @return
-     * @throws Exception
      */
     @Override
-    public String encrypt(String key, String encData) throws Exception {
+    public String encrypt(String key, String encData) {
         key = setSuffix(key, secretProperties.getAes().getIv());
         byte[] result = new byte[0];
         try {
             result = encCipher(key).doFinal(encData.getBytes());
         } catch (IllegalBlockSizeException e) {
             log.error(" IllegalBlockSizeException is error {}", e.getMessage());
+            throw new EncryptionException(e.getMessage());
         } catch (BadPaddingException e) {
             log.error(" BadPaddingException is error {}", e.getMessage());
+            throw new EncryptionException(e.getMessage());
         }
         return Base64Util.encode(result);
     }
