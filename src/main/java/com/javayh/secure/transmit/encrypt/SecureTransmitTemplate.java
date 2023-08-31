@@ -21,7 +21,7 @@ public interface SecureTransmitTemplate {
      * @param data 加密的数据
      * @return {@link String} 最终的结果
      */
-    String encrypt(String key, String data) throws Exception;
+    String encrypt(String key, String data);
 
     /**
      * 数据解密
