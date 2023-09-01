@@ -3,7 +3,7 @@ package com.javayh.secure.transmit.configuration;
 import com.javayh.secure.transmit.annotation.SecureTransmit;
 import com.javayh.secure.transmit.bean.SecretType;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
-import com.javayh.secure.transmit.processor.SecureTransmitProcessor;
+import com.javayh.secure.transmit.processor.SecureTransmitPostProcessor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -22,11 +22,11 @@ import java.util.Objects;
 @Aspect
 public class SecretAspectConfiguration {
 
-    private final SecureTransmitProcessor encryptionProcessor;
+    private final SecureTransmitPostProcessor encryptionProcessor;
     private final SecretProperties secretProperties;
 
     public SecretAspectConfiguration(SecretProperties secretProperties) {
-        this.encryptionProcessor = new SecureTransmitProcessor(secretProperties);
+        this.encryptionProcessor = new SecureTransmitPostProcessor(secretProperties);
         this.secretProperties = secretProperties;
     }
 

@@ -3,7 +3,7 @@ package com.javayh.secure.transmit.encrypt;
 import com.javayh.secure.transmit.bean.SecretType;
 import com.javayh.secure.transmit.configuration.properties.SecretProperties;
 import com.javayh.secure.transmit.encrypt.aes.AESEncryption;
-import com.javayh.secure.transmit.encrypt.aes.AESGCMEncryption;
+import com.javayh.secure.transmit.encrypt.aes.GCMEncryption;
 import com.javayh.secure.transmit.encrypt.ecc.EccEncryption;
 import com.javayh.secure.transmit.encrypt.rsa.RsaEncryption;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class SecureTransmitDigest {
             return eccInstance;
         } else if (SecretType.GCM.equals(type)) {
             if (gcmInstance == null) {
-                gcmInstance = new AESGCMEncryption(secretProperties);
+                gcmInstance = new GCMEncryption(secretProperties);
             }
             return eccInstance;
         } else {
