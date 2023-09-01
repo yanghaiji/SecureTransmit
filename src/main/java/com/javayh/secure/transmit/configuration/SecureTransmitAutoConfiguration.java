@@ -21,7 +21,7 @@ import java.lang.annotation.*;
         EncryptResponseBodyAdvice.class,
         DecryptRequestBodyAdvice.class,
         SecretAspectConfiguration.class,
-        SerializationConfig.class})
+        SerializationConfiguration.class})
 public @interface SecureTransmitAutoConfiguration {
 
 }

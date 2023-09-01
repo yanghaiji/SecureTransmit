@@ -21,7 +21,7 @@ import java.util.Objects;
  * @author haiji
  */
 @Slf4j
-public class SecureTransmitProcessor {
+public class SecureTransmitPostProcessor {
 
     /**
      * 密钥和机密算法的配置
@@ -32,7 +32,7 @@ public class SecureTransmitProcessor {
     private final Boolean isShowLog;
     private final SecretProperties secretProperties;
 
-    public SecureTransmitProcessor(SecretProperties secretProperties) {
+    public SecureTransmitPostProcessor(SecretProperties secretProperties) {
         this.isShowLog = secretProperties.getIsShowLog();
         this.secretProperties = secretProperties;
         LocalKeysInitFactory.initLocalKeys(secretProperties, this.publicKey, this.privateKey);
@@ -138,7 +138,7 @@ public class SecureTransmitProcessor {
             BeanUtils.copyProperties(secretProperties, properties);
             if (Objects.nonNull(type)) {
                 properties.setType(type);
-                LocalKeysInitFactory.initLocalKeys(secretProperties, SecureTransmitProcessor.this.publicKey, SecureTransmitProcessor.this.privateKey);
+                LocalKeysInitFactory.initLocalKeys(secretProperties, SecureTransmitPostProcessor.this.publicKey, SecureTransmitPostProcessor.this.privateKey);
             }
             return this;
         }

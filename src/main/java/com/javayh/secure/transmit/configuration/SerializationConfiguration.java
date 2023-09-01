@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
  * @author haiji
  */
 @Configuration
-public class SerializationConfig {
+public class SerializationConfiguration {
 
 
     private final SecretProperties secretProperties;
 
-    public SerializationConfig(SecretProperties secretProperties) {
+    public SerializationConfiguration(SecretProperties secretProperties) {
         this.secretProperties = secretProperties;
     }
 

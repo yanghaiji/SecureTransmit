@@ -24,11 +24,11 @@ import java.security.NoSuchAlgorithmException;
  * @since 2023-08-24
  */
 @Slf4j
-public class AESGCMEncryption implements SecureTransmitTemplate {
+public class GCMEncryption implements SecureTransmitTemplate {
 
     private final String iv;
 
-    public AESGCMEncryption(SecretProperties secretProperties) {
+    public GCMEncryption(SecretProperties secretProperties) {
         this.iv = secretProperties.getGcm().getIv();
     }
 
