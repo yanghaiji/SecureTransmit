@@ -16,7 +16,7 @@ public interface EncryptConstant {
 
 	String AES_GCM = "AES/GCM/NoPadding";
 
-	String INSTANCE = "AES/ECB/PKCS7Padding";
+	String INSTANCE = "AES/ECB/PKCS5Padding";
 
 	char[] HEXADECIMAL = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
 			'c', 'd', 'e', 'f' };
