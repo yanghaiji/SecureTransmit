@@ -28,7 +28,7 @@ public class SecureTransmitPostProcessor {
      */
     private final ThreadLocal<String> publicKey = new ThreadLocal<>();
     private final ThreadLocal<String> privateKey = new ThreadLocal<>();
-    ;
+
     private final Boolean isShowLog;
     private final SecretProperties secretProperties;
 

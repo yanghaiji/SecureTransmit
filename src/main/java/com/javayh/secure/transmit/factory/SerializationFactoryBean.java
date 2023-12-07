@@ -1,7 +1,6 @@
 package com.javayh.secure.transmit.factory;
 
 import com.javayh.secure.transmit.serialize.Serialization;
-import com.javayh.secure.transmit.util.SerializationStrategy;
 
 /**
  * spring 版本的控制实现
